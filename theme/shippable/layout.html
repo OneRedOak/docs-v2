@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />	
+	<title>{{ meta['title'] if meta and meta['title'] else title }} - Shippable Documentation</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="{{ meta['description'] if meta }}" />
+    <meta name="keywords" content="{{ meta['keywords'] if meta }}" />
+
+    {%- set url_root = pathto('', 1) %}
+    {%- if url_root == '#' %}{% set url_root = '' %}{% endif %}
+
+    {%- if current_version == 'latest' %}
+      {% set github_tag = 'master' %}
+    {% else %}
+      {% set github_tag = current_version %}
+    {% endif %}
+
+	<!-- stylesheets -->
+	<link rel="stylesheet" type="text/css" href="http://yandex.st/highlightjs/8.0/styles/default.min.css">
+	{%- set css_files = css_files + ['_static/ash/css/compiled/theme.css'] %}
+	{%- set css_files = css_files + ['_static/ash/css/vendor/animate.css'] %}
+	{%- set css_files = css_files + ['_static/ash/css/custom.css'] %}
+
+	{%- for cssfile in css_files %}
+        <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css" />
+    {%- endfor %}
+
+	<!-- javascript -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+
+    {%- set script_files =
+    ['_static/ash/js/theme.js']
+    + ['_static/ash/js/bootstrap/bootstrap.min.js']
+    %}
+
+    {%- for scriptfile in script_files if scriptfile != '_static/jquery.js' %}
+        <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
+    {%- endfor %}
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" href="{{ pathto('_static/ash/images/favicon.ico', 1) }}">
+
+	<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript">
+        // This is included here for Javascript that doesn't have access to the templates.
+        var doc_version = "{{ current_version }}";
+        var doc_slug = "{{ slug }}";
+    </script>
+
+    {#
+        This part is hopefully complex because things like |cut '/index/' are not available in Sphinx jinja
+        and will make it crash. (and we need index/ out.
+    #}
+    <link rel="canonical" href="http://docs.shippable.com/en/latest/
+    {%- for word in pagename.split('/') -%}
+        {%- if word != 'index' -%}
+            {%- if word != '' -%}
+                {{ word }}/
+            {%- endif -%}
+        {%- endif -%}
+    {%- endfor -%}
+    ">
+
+    {%- for scriptfile in script_files if scriptfile != '_static/jquery.js' %}
+    <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
+    {%- endfor %}
+
+    <!-- Start of Google Analytics Code -->
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-50610279-1', 'shippable.com');
+        ga('send', 'pageview');
+    </script>
+    <!-- End of Google Analytics Code -->
+</head>
+
+<body id="docs" data-spy="scroll" data-target="#guide">
+	<div id="guide">
+		<h1 class="logo">
+			<a href="index.html"><img src="{{ pathto('_static/ash/images/main-logo-inverted-hidpi.png', 1) }}" alt="Shippable Logo" id="headerLogo"/></a>
+		</h1>
+		{{ toctree(collapse=False, maxdepth=2) }}
+	</div>
+
+	<div id="api-docs">
+		<div id="methods">
+			<div class="languages">
+				<h4 class="codeExampleTitle">Code Examples</h4>
+			</div>
+			<div class="method" id="intro">
+				<div class="method-section clearfix">
+					<div class="method-description">
+						{% block body %}{% endblock %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$(function () {
+			hljs.configure({
+			  tabReplace: '  ',
+			  classPrefix: ''
+			})
+			hljs.initHighlightingOnLoad();
+
+			// language toggle
+			var $languages = $(".languages .language");
+			$languages.click(function (e) {
+				e.preventDefault();
+				var lang = $(this).data("lang");
+				$languages.removeClass("selected");
+				$(this).addClass("selected");
+
+				$("pre code").hide();
+				$("pre code." + lang).css("display", "block");
+			});
+		});
+	</script>
+</body>
+</html>
